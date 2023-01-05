@@ -1,35 +1,64 @@
 const express = require("express");
 const morgan = require("morgan");
 const postBank = require("./postBank");
-
 const app = express();
-app.get(express.static('public/style.css'));
-app.use(morgan('dev'));
+
+app.use(express.static("public"));
+
+app.use(morgan("dev"));
+
+app.get('/posts/:id', (req, res) => {
+  const id = req.params.id;
+  const post = postBank.find(id);
+  res.send(
+    `<!DOCTYPE html>
+    <body>
+    <link rel="stylesheet" href="/style.css" />
+    <div class='news-list'>
+    <header><img src="/logo.png"/>Wizard News</header>
+      <div class="title">
+    ${post.title}
+    <small>(by ${post.name})</small>
+    </div>
+  <div class="content">
+ ${post.content}
+  </div>
+  </div>
+  </body>
+    </html>
+    `);
+});
 
 app.get("/", (req, res) => {
-  
   const posts = postBank.list();
-  
-  const html = `
-  <!DOCTYPE html>
-  <html>
+  res.send(`
+    <!DOCTYPE html>
+    <html>
     <head>
       <title>Wizard News</title>
+      <link rel="stylesheet" href="/style.css" />
     </head>
     <body>
-      <ul>
-      ${
-        posts.map( post => {
-          return `<li>${ post.name}</li>
-          <p>${post.title}</p>`;
-        }).join('')
-     }
-      </ul>
+      <div class="news-list">
+        <header><img src="/logo.png"/>Wizard News</header>
+        ${posts.map(post => `
+          <div class='news-item'>
+            <p>
+              <span class="news-position">${post.id}. ▲</span>
+              <a href="/posts/${post.id}">${post.title}</a>
+              <small>(by ${post.name})</small>
+            </p>
+            <small class="news-info">
+              ${post.upvotes} upvotes | ${post.date}
+            </small>
+          </div>`
+        ).join('')}
+      </div>
     </body>
-  </html>`;
-
-  res.send(html);
+    </html>
+  `);
 });
+
 
 const PORT = 1337;
 
