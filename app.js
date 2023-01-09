@@ -3,13 +3,33 @@ const morgan = require("morgan");
 const postBank = require("./postBank");
 const app = express();
 
-app.use(express.static("public"));
 
+
+app.use(express.static("public"))
 app.use(morgan("dev"));
 
 app.get('/posts/:id', (req, res) => {
   const id = req.params.id;
   const post = postBank.find(id);
+  if(!post.id){
+    res.status(404)
+    res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Wizard News</title>
+      <link rel="stylesheet" href="/style.css" />
+    </head>
+    <body>
+      <header><img src="/logo.png"/>Wizard News</header>
+      <div class="not-found">
+        <p>Accio Page! 🧙‍♀️ ... Page Not Found</p>
+        <img src="/dumbledore-404.gif" />
+      </div>
+    </body>
+    </html>`
+   )
+  } else {
   res.send(
     `<!DOCTYPE html>
     <body>
@@ -26,8 +46,8 @@ app.get('/posts/:id', (req, res) => {
   </div>
   </body>
     </html>
-    `);
-});
+    `)}
+})
 
 app.get("/", (req, res) => {
   const posts = postBank.list();
@@ -65,3 +85,4 @@ const PORT = 1337;
 app.listen(PORT, () => {
   console.log(`App listening in port ${PORT}`);
 });
+
