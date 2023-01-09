@@ -4,7 +4,6 @@ const postBank = require("./postBank");
 const app = express();
 
 
-
 app.use(express.static("public"))
 app.use(morgan("dev"));
 
@@ -79,8 +78,7 @@ app.get("/", (req, res) => {
   `);
 });
 
-
-const PORT = 1337;
+const PORT = process.env.PORT || 1337;
 
 app.listen(PORT, () => {
   console.log(`App listening in port ${PORT}`);
